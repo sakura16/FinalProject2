@@ -25,8 +25,8 @@ app = dash.Dash(__name__)
 #---------------------------------------------------------------------------------
 # Create the dropdown menu options
 dropdown_options = [
-    {'label': '...........', 'value': 'Yearly Statistics'},
-    {'label': 'Recession Period Statistics', 'value': '.........'}
+    {'label': 'Yearly Statistics', 'value': 'Yearly Statistics'},
+    {'label': 'Recession Period Statistics', 'value': 'Recession Period Statistics'}
 ]
 # List of years 
 year_list = [i for i in range(1980, 2024, 1)]
@@ -43,16 +43,19 @@ app.layout = html.Div([
                            {'label': 'Yearly Statistics', 'value': 'Yearly Statistics'},
                            {'label': 'Recession Period Statistics', 'value': 'Recession Period Statistics'}
                            ],
+                  value='Select Statistics',
                   placeholder='Select a report type',
                   style={'width':'80%', 'padding':3, 'font-size':20, 'textAlign':'center'})
     ]),
     html.Div(dcc.Dropdown(
             id='select-year',
-            options=[{'label': 1980, 'value': 2024} for i in year_list],
-            value='Select-year'
+            options=[{'label': i, 'value': 2024} for i in year_list],
+            value='Select-year', 
+            placeholder='Select Year'
         )),
     html.Div([
         html.Div(id='output-container', className='chart-grid', style={'display': 'flex'}),
+])
 ])
 #TASK 2.4: Creating Callbacks
 # Define the callback function to update the input container based on the selected statistics
@@ -103,10 +106,10 @@ def update_output_container(input_year, selected_statistics):
 # Plot 3 : Pie chart for total expenditure share by vehicle type during recessions
             # grouping data for plotting
             # Hint:Use Vehicle_Type and Advertising_Expenditure columns
-            exp_rec= recession_data.groupby('Vehicle_Type')['Advertising_Expenditure'].mean().reset_index()
-            R_chart3 = dcc.Graph(
-                    figure=px.pie(exp_rec,
-                    values='Advertising_Expenditure',
+        exp_rec= recession_data.groupby('Vehicle_Type')['Advertising_Expenditure'].mean().reset_index()
+        R_chart3 = dcc.Graph(
+                figure=px.pie(exp_rec,
+                values='Advertising_Expenditure',
                  names='Vehicle_Type',
                  title="Total expenditure share by vehicle type during recessions"
                 )
@@ -123,7 +126,7 @@ def update_output_container(input_year, selected_statistics):
 
 
         return [
-             html.Div(className='chart-item', children=[html.Div(children=R_chart1),html.Div(children=R_chart2)],style={'display': 'flex'}),
+            html.Div(className='chart-item', children=[html.Div(children=R_chart1),html.Div(children=R_chart2)],style={'display': 'flex'}),
             html.Div(className='chart-item', children=[html.Div(children=R_chart3),html.Div(children=R_chart4)],style={'display': 'flex'})
             ]
 
@@ -139,7 +142,10 @@ def update_output_container(input_year, selected_statistics):
         # grouping data for plotting.
         # Hint:Use the columns Year and Automobile_Sales.
         yas= data.groupby('Year')['Automobile_Sales'].mean().reset_index()
-        Y_chart1 = dcc.Graph(figure=px.line(yas))
+        Y_chart1 = dcc.Graph(figure=px.line(yas,
+            x='Year',
+            y='Automobile Sales',
+            title='Total Yearly Automobile Sales'))
             
 # Plot 2 Total Monthly Automobile sales using line chart.
         # grouping data for plotting.
@@ -164,7 +170,7 @@ def update_output_container(input_year, selected_statistics):
         Y_chart4 = dcc.Graph(figure=px.pie(exp_rec,
                     values='Advertising_Expenditure',
                  names='Vehicle_Type',
-                 title="Total expenditure share by vehicle type yearly".)
+                 title="Total expenditure share by vehicle type yearly"))
 
 #TASK 2.6: Returning the graphs for displaying Yearly data
         return [
@@ -177,4 +183,3 @@ def update_output_container(input_year, selected_statistics):
 # Run the Dash app
 if __name__ == '__main__':
     app.run_server(debug=True)
-
